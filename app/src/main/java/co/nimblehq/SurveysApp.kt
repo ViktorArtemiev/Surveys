@@ -5,6 +5,7 @@ import android.app.Application
 import co.nimblehq.di.AppInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -21,6 +22,7 @@ class SurveysApp : Application(), HasActivityInjector {
     override fun onCreate() {
         super.onCreate()
         AppInjector.init(this@SurveysApp)
+        Timber.plant(Timber.DebugTree())
     }
 
 }

@@ -1,11 +1,13 @@
-package co.nimblehq.di
+package co.nimblehq.di.module
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import co.nimblehq.screen.ViewModelFactory
+import co.nimblehq.screen.main.MainViewModel
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module
+import dagger.multibindings.IntoMap
 import kotlin.reflect.KClass
 
 
@@ -15,8 +17,15 @@ import kotlin.reflect.KClass
  */
 @Module
 abstract class ViewModelModule {
+
     @Binds
     internal abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    abstract fun bindSplashViewModel(viewModel: MainViewModel): ViewModel
+
 }
 
 @MustBeDocumented

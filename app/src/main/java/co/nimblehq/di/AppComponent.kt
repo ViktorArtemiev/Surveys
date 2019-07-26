@@ -1,6 +1,10 @@
 package co.nimblehq.di
 
 import co.nimblehq.SurveysApp
+import co.nimblehq.di.module.AppModule
+import co.nimblehq.di.module.DataModule
+import co.nimblehq.di.module.MainActivityModule
+import co.nimblehq.di.module.ViewModelModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -15,7 +19,10 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AndroidInjectionModule::class,
-        ViewModelModule::class]
+        ViewModelModule::class,
+        MainActivityModule::class,
+        DataModule::class,
+        AppModule::class]
 )
 interface AppComponent {
 

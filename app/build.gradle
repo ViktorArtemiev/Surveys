@@ -78,6 +78,9 @@ dependencies {
         exclude group: 'org.json'
     }
 
+    // Logging
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
     // Tests
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
