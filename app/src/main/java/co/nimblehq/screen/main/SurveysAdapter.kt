@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import co.nimblehq.R
 import co.nimblehq.data.model.Survey
 import co.nimblehq.extension.loadImage
+import kotlinx.android.synthetic.main.item_error.view.*
 import kotlinx.android.synthetic.main.item_survey.view.*
 
 
@@ -17,12 +18,22 @@ import kotlinx.android.synthetic.main.item_survey.view.*
  * Created by Viktor Artemiev on 2019-07-27.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
+class SurveysAdapter(private val onRetryButtonClickListener: View.OnClickListener) :
+    PagedListAdapter<Survey, RecyclerView.ViewHolder>(SurveyDiffCallback()) {
 
-class SurveysAdapter : PagedListAdapter<Survey, RecyclerView.ViewHolder>(SurveyDiffCallback()) {
+    enum class State {
+        LOADING, ERROR, DONE
+    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val itemView = inflateItemView(parent, R.layout.item_survey)
-        return SurveyViewHolder(itemView)
+    private var state: State = State.LOADING
+
+    override fun onCreateViewHolder(parent: ViewGroup, @LayoutRes viewType: Int): RecyclerView.ViewHolder {
+        val itemView = inflateItemView(parent, viewType)
+        return when (viewType) {
+            R.layout.item_loading -> LoadingViewHolder(itemView)
+            R.layout.item_error -> ErrorViewHolder(onRetryButtonClickListener, itemView)
+            else -> SurveyViewHolder(itemView)
+        }
     }
 
     private fun inflateItemView(parent: ViewGroup, @LayoutRes layoutRes: Int): View {
@@ -30,8 +41,40 @@ class SurveysAdapter : PagedListAdapter<Survey, RecyclerView.ViewHolder>(SurveyD
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as SurveyViewHolder).bindSurvey(getItem(position)!!)
+        if (holder is SurveyViewHolder) holder.bindSurvey(getItem(position)!!)
     }
+
+    @LayoutRes
+    override fun getItemViewType(position: Int): Int {
+        return if (hasExtraItem() && position == itemCount - 1) {
+            when (state) {
+                State.ERROR -> R.layout.item_error
+                else -> R.layout.item_loading
+            }
+        } else {
+            R.layout.item_survey
+        }
+    }
+
+    fun setState(newState: State) {
+        if (newState == this.state) return
+        val hadExtraItem = hasExtraItem()
+        this.state = newState
+        val hasExtraItem = hasExtraItem()
+        if (hadExtraItem != hasExtraItem) {
+            if (hadExtraItem) {
+                notifyItemRemoved(super.getItemCount())
+            } else {
+                notifyItemInserted(super.getItemCount())
+            }
+        } else if (hasExtraItem) {
+            notifyItemChanged(itemCount - 1)
+        }
+    }
+
+    override fun getItemCount() = super.getItemCount() + if (hasExtraItem()) 1 else 0
+
+    private fun hasExtraItem() = state == State.LOADING || state == State.ERROR
 }
 
 class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -40,6 +83,16 @@ class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         itemView.image_view.loadImage(survey.image)
         itemView.text_view_title.text = survey.title
         itemView.text_view_description.text = survey.description
+    }
+}
+
+class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+class ErrorViewHolder(onRetryButtonClickListener: View.OnClickListener, itemView: View) :
+    RecyclerView.ViewHolder(itemView) {
+
+    init {
+        itemView.button_retry.setOnClickListener(onRetryButtonClickListener)
     }
 
 }

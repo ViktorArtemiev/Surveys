@@ -1,6 +1,7 @@
 package co.nimblehq.screen.main
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -12,6 +13,7 @@ import co.nimblehq.R
 import co.nimblehq.data.model.Survey
 import co.nimblehq.di.Injectable
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -20,7 +22,7 @@ import javax.inject.Inject
  */
 class MainActivity : AppCompatActivity(), Injectable {
 
-    val surveysAdapter = SurveysAdapter()
+    val surveysAdapter = SurveysAdapter(View.OnClickListener { refreshSurveys() })
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: MainViewModel
@@ -37,18 +39,30 @@ class MainActivity : AppCompatActivity(), Injectable {
 
         viewModel = ViewModelProviders.of(this@MainActivity, viewModelFactory).get()
         viewModel.surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
+        viewModel.loadingLive.observe(this@MainActivity, Observer { handleLoading(it) })
+        viewModel.errorLive.observe(this@MainActivity, Observer { handleError(it) })
     }
 
-    fun handleSurveys(surveys: PagedList<Survey>) {
-        surveysAdapter.submitList(surveys)
+    fun retrySurveys() {
+
     }
 
     fun refreshSurveys() {
         viewModel.refresh()
     }
 
-    fun retrySurveys() {
+    fun handleSurveys(surveys: PagedList<Survey>) {
+        surveysAdapter.submitList(surveys)
+    }
 
+    fun handleLoading(isLoading: Boolean) {
+        if (isLoading) surveysAdapter.setState(SurveysAdapter.State.LOADING)
+        else surveysAdapter.setState(SurveysAdapter.State.DONE)
+    }
+
+    fun handleError(error: Throwable) {
+        Timber.e(error)
+        surveysAdapter.setState(SurveysAdapter.State.ERROR)
     }
 
 }

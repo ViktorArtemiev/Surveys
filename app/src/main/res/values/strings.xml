@@ -6,4 +6,9 @@
     <string name="activity_main_btn_survey">Take the survey</string>
     <!--activity main end-->
 
+    <!--item error start-->
+    <string name="item_error_tv_message">Oops! Something went wrong</string>
+    <string name="item_error_btn_retry">Retry</string>
+    <!--item error end-->
+
 </resources>

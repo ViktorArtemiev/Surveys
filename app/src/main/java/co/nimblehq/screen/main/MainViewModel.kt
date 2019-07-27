@@ -19,7 +19,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(surveysRepository: SurveysRepository) : ViewModel() {
 
     companion object {
-        private const val PAGE_SIZE = 10
+        private const val PAGE_SIZE = 5
     }
 
     val dataSourceFactory = SurveysDataSourceFactory(surveysRepository)
