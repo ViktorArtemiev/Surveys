@@ -1,5 +1,6 @@
 package co.nimblehq.data.source.surveys
 
+import co.nimblehq.data.model.Survey
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
@@ -16,6 +17,6 @@ interface SurveysService {
     fun getSurveys(
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
-    ): Deferred<Response<String>>
+    ): Deferred<Response<List<Survey>>>
 
 }

@@ -1,9 +1,9 @@
 <resources>
 
     <style name="Theme.Surveys" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/blue_whale</item>
+        <item name="colorPrimaryDark">@color/dark_blue_whale</item>
+        <item name="colorAccent">@color/red</item>
     </style>
 
 </resources>

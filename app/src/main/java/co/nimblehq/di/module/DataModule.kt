@@ -2,8 +2,8 @@ package co.nimblehq.di.module
 
 import co.nimblehq.BuildConfig
 import co.nimblehq.SurveysAccount
+import co.nimblehq.data.source.surveys.SurveysRepository
 import co.nimblehq.data.source.surveys.SurveysService
-import co.nimblehq.data.source.surveys.SurveysSource
 import co.nimblehq.data.source.token.TokenService
 import co.nimblehq.data.source.token.TokenSource
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -17,7 +17,6 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -31,7 +30,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideSurveySource(service: SurveysService) = SurveysSource(service)
+    fun provideSurveyRepository(service: SurveysService) = SurveysRepository(service)
 
     @Singleton
     @Provides
@@ -48,12 +47,14 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideTokenSource(service: TokenService) = TokenSource(service)
+    fun provideTokenRepository(service: TokenService) = TokenSource(service)
 
     @Singleton
     @Provides
-    fun provideTokenService() = buildRetrofit(createOkHttpClientBuilder().build())
-        .create(TokenService::class.java)
+    fun provideTokenService() = buildRetrofit(
+        createOkHttpClientBuilder()
+            .build()
+    ).create(TokenService::class.java)
 
     fun buildRetrofit(httpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
@@ -85,7 +86,6 @@ class AuthorizationInterceptor(
                 val token = tokenSource.refreshToken(account.provideUser())
                 account.refreshToken(token)
                 response = chain.proceed(setAuthorizationHeader(request))
-                Timber.d(response.message())
             }
         }
         return response
