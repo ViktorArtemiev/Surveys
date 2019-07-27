@@ -1,4 +1,4 @@
-package co.nimblehq.screen.main
+package co.nimblehq.screen.main.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -81,7 +81,6 @@ class SurveysAdapter(private val retryCallback: () -> Unit) :
 
     private fun hasExtraItem() = state == State.LOADING || state == State.ERROR
 
-
 }
 
 class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -101,7 +100,6 @@ class ErrorViewHolder(private val retryCallback: () -> Unit, itemView: View) :
     init {
         itemView.button_retry.setOnClickListener { retryCallback() }
     }
-
 }
 
 class SurveyDiffCallback : DiffUtil.ItemCallback<Survey>() {
@@ -113,5 +111,4 @@ class SurveyDiffCallback : DiffUtil.ItemCallback<Survey>() {
     override fun areContentsTheSame(oldItem: Survey, newItem: Survey): Boolean {
         return oldItem == newItem
     }
-
 }

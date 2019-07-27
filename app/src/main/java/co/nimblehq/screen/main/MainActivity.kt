@@ -12,6 +12,8 @@ import androidx.viewpager2.widget.ViewPager2
 import co.nimblehq.R
 import co.nimblehq.data.model.Survey
 import co.nimblehq.di.Injectable
+import co.nimblehq.screen.main.adapter.IndicatorsAdapter
+import co.nimblehq.screen.main.adapter.SurveysAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -23,11 +25,13 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), Injectable {
 
     private val surveysAdapter = SurveysAdapter { retrySurveys() }
+    private val indicatorsAdapter = IndicatorsAdapter()
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             survey = surveysAdapter.getItem(position)
             button_survey.isVisible = survey != null
+            indicatorsAdapter.selectItemByPosition(position)
         }
     }
 
@@ -47,8 +51,11 @@ class MainActivity : AppCompatActivity(), Injectable {
         view_pager.adapter = surveysAdapter
         view_pager.registerOnPageChangeCallback(onPageChangeCallback)
 
+        recycler_view_indicator.adapter = indicatorsAdapter
+
         viewModel = ViewModelProviders.of(this@MainActivity, viewModelFactory).get()
         viewModel.surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
+        viewModel.itemCountLive.observe(this@MainActivity, Observer { handleCount(it) })
         viewModel.loadingLive.observe(this@MainActivity, Observer { handleLoading(it) })
         viewModel.errorLive.observe(this@MainActivity, Observer { handleError(it) })
     }
@@ -59,10 +66,15 @@ class MainActivity : AppCompatActivity(), Injectable {
 
     fun refreshSurveys() {
         viewModel.refresh()
+        indicatorsAdapter.clear()
     }
 
     fun handleSurveys(surveys: PagedList<Survey>) {
         surveysAdapter.submitList(surveys)
+    }
+
+    fun handleCount(count: Int) {
+        indicatorsAdapter.itemCount = count
     }
 
     fun handleLoading(isLoading: Boolean) {

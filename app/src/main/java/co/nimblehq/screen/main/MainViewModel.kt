@@ -22,15 +22,18 @@ class MainViewModel @Inject constructor(surveysRepository: SurveysRepository) : 
         private const val PAGE_SIZE = 5
     }
 
-    val dataSourceFactory = SurveysDataSourceFactory(surveysRepository)
+    private val dataSourceFactory = SurveysDataSourceFactory(surveysRepository)
 
     val surveysLive: LiveData<PagedList<Survey>>
+    val itemCountLive: LiveData<Int>
     val loadingLive: LiveData<Boolean>
     val errorLive: LiveData<Throwable>
 
     init {
         val pagedListConfig = buildPagedListConfig()
         surveysLive = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
+        itemCountLive = Transformations.switchMap<SurveyDataSource, Int>(
+            dataSourceFactory.dataSourceLive, SurveyDataSource::itemCountLive)
         loadingLive = Transformations.switchMap<SurveyDataSource, Boolean>(
             dataSourceFactory.dataSourceLive, SurveyDataSource::loadingLive)
         errorLive = Transformations.switchMap<SurveyDataSource, Throwable>(

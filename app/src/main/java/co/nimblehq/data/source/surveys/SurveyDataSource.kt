@@ -15,8 +15,9 @@ class SurveyDataSource(private val surveysRepository: SurveysRepository) : PageK
 
     var retry: (() -> Any)? = null
 
-    var loadingLive = MutableLiveData<Boolean>()
-    var errorLive = MutableLiveData<Throwable>()
+    val itemCountLive = MutableLiveData<Int>()
+    val loadingLive = MutableLiveData<Boolean>()
+    val errorLive = MutableLiveData<Throwable>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Survey>) {
         GlobalScope.launch {
@@ -26,6 +27,7 @@ class SurveyDataSource(private val surveysRepository: SurveysRepository) : PageK
                 loadingLive.postValue(false)
                 retry = null
                 callback.onResult(surveys, null, 2)
+                itemCountLive.postValue(calcTotalItemCount(surveys.size))
             } catch (error: Throwable) {
                 retry = { loadInitial(params, callback) }
                 errorLive.postValue(error)
@@ -41,10 +43,19 @@ class SurveyDataSource(private val surveysRepository: SurveysRepository) : PageK
                 loadingLive.postValue(false)
                 retry = null
                 callback.onResult(surveys, params.key + 1)
+                itemCountLive.postValue(calcTotalItemCount(surveys.size))
             } catch (error: Throwable) {
                 retry = { loadAfter(params, callback) }
                 errorLive.postValue(error)
             }
+        }
+    }
+
+    private fun calcTotalItemCount(surveysSize: Int): Int {
+        return if (itemCountLive.value == null) {
+            surveysSize
+        } else {
+            itemCountLive.value!! + surveysSize
         }
     }
 
