@@ -1,8 +1,8 @@
 package co.nimblehq.screen.main
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -22,10 +22,19 @@ import javax.inject.Inject
  */
 class MainActivity : AppCompatActivity(), Injectable {
 
-    val surveysAdapter = SurveysAdapter(View.OnClickListener { refreshSurveys() })
+    private val surveysAdapter = SurveysAdapter { retrySurveys() }
+
+    private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            survey = surveysAdapter.getItem(position)
+            button_survey.isVisible = survey != null
+        }
+    }
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: MainViewModel
+
+    var survey: Survey? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +45,7 @@ class MainActivity : AppCompatActivity(), Injectable {
 
         view_pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         view_pager.adapter = surveysAdapter
+        view_pager.registerOnPageChangeCallback(onPageChangeCallback)
 
         viewModel = ViewModelProviders.of(this@MainActivity, viewModelFactory).get()
         viewModel.surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
@@ -44,7 +54,7 @@ class MainActivity : AppCompatActivity(), Injectable {
     }
 
     fun retrySurveys() {
-
+        viewModel.retry()
     }
 
     fun refreshSurveys() {
@@ -56,6 +66,7 @@ class MainActivity : AppCompatActivity(), Injectable {
     }
 
     fun handleLoading(isLoading: Boolean) {
+        button_survey.isVisible = !isLoading
         if (isLoading) surveysAdapter.setState(SurveysAdapter.State.LOADING)
         else surveysAdapter.setState(SurveysAdapter.State.DONE)
     }

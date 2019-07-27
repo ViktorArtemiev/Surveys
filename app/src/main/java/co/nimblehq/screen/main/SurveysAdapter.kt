@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.item_survey.view.*
  * Created by Viktor Artemiev on 2019-07-27.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class SurveysAdapter(private val onRetryButtonClickListener: View.OnClickListener) :
+class SurveysAdapter(private val retryCallback: () -> Unit) :
     PagedListAdapter<Survey, RecyclerView.ViewHolder>(SurveyDiffCallback()) {
 
     enum class State {
@@ -31,7 +31,7 @@ class SurveysAdapter(private val onRetryButtonClickListener: View.OnClickListene
         val itemView = inflateItemView(parent, viewType)
         return when (viewType) {
             R.layout.item_loading -> LoadingViewHolder(itemView)
-            R.layout.item_error -> ErrorViewHolder(onRetryButtonClickListener, itemView)
+            R.layout.item_error -> ErrorViewHolder(retryCallback, itemView)
             else -> SurveyViewHolder(itemView)
         }
     }
@@ -41,7 +41,7 @@ class SurveysAdapter(private val onRetryButtonClickListener: View.OnClickListene
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is SurveyViewHolder) holder.bindSurvey(getItem(position)!!)
+        if (holder is SurveyViewHolder) holder.bindSurvey(super.getItem(position)!!)
     }
 
     @LayoutRes
@@ -74,7 +74,14 @@ class SurveysAdapter(private val onRetryButtonClickListener: View.OnClickListene
 
     override fun getItemCount() = super.getItemCount() + if (hasExtraItem()) 1 else 0
 
+    public override fun getItem(position: Int): Survey? {
+        return if (hasExtraItem()) null
+        else super.getItem(position)
+    }
+
     private fun hasExtraItem() = state == State.LOADING || state == State.ERROR
+
+
 }
 
 class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -88,11 +95,11 @@ class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-class ErrorViewHolder(onRetryButtonClickListener: View.OnClickListener, itemView: View) :
+class ErrorViewHolder(private val retryCallback: () -> Unit, itemView: View) :
     RecyclerView.ViewHolder(itemView) {
 
     init {
-        itemView.button_retry.setOnClickListener(onRetryButtonClickListener)
+        itemView.button_retry.setOnClickListener { retryCallback() }
     }
 
 }

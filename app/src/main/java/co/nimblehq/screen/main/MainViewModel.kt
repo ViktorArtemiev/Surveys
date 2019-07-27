@@ -50,6 +50,6 @@ class MainViewModel @Inject constructor(surveysRepository: SurveysRepository) : 
     }
 
     fun retry() {
-
+        dataSourceFactory.dataSourceLive.value?.retry?.invoke()
     }
 }
