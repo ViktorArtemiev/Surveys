@@ -2,7 +2,8 @@
     <string name="app_name">Surveys</string>
 
     <!--activity main start-->
-    <string name="activity_main_title_surveys">SURVEYS</string>
+    <string name="activity_main_title">SURVEYS</string>
+    <string name="activity_main_btn_survey">Take the survey</string>
     <!--activity main end-->
 
 </resources>

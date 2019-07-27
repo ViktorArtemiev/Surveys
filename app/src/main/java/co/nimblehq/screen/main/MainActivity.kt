@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), Injectable {
         setContentView(R.layout.activity_main)
 
         toolbar.inflateMenu(R.menu.menu_main)
+        toolbar.setNavigationOnClickListener { refreshSurveys() }
 
         view_pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         view_pager.adapter = surveysAdapter
@@ -40,6 +41,14 @@ class MainActivity : AppCompatActivity(), Injectable {
 
     fun handleSurveys(surveys: PagedList<Survey>) {
         surveysAdapter.submitList(surveys)
+    }
+
+    fun refreshSurveys() {
+        viewModel.refresh()
+    }
+
+    fun retrySurveys() {
+
     }
 
 }

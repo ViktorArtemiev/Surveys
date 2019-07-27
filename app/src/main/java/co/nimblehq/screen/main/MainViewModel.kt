@@ -1,13 +1,13 @@
 package co.nimblehq.screen.main
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import co.nimblehq.data.model.Survey
 import co.nimblehq.data.source.surveys.SurveyDataSource
+import co.nimblehq.data.source.surveys.SurveysDataSourceFactory
 import co.nimblehq.data.source.surveys.SurveysRepository
 import javax.inject.Inject
 
@@ -16,18 +16,25 @@ import javax.inject.Inject
  * Created by Viktor Artemiev on 2019-07-26.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class MainViewModel @Inject constructor(val surveysRepository: SurveysRepository) : ViewModel() {
+class MainViewModel @Inject constructor(surveysRepository: SurveysRepository) : ViewModel() {
 
     companion object {
         private const val PAGE_SIZE = 10
     }
 
+    val dataSourceFactory = SurveysDataSourceFactory(surveysRepository)
+
     val surveysLive: LiveData<PagedList<Survey>>
-    val errorLive = MutableLiveData<Boolean>()
+    val loadingLive: LiveData<Boolean>
+    val errorLive: LiveData<Throwable>
 
     init {
         val pagedListConfig = buildPagedListConfig()
-        surveysLive = buildLivePagedList(pagedListConfig)
+        surveysLive = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
+        loadingLive = Transformations.switchMap<SurveyDataSource, Boolean>(
+            dataSourceFactory.dataSourceLive, SurveyDataSource::loadingLive)
+        errorLive = Transformations.switchMap<SurveyDataSource, Throwable>(
+            dataSourceFactory.dataSourceLive, SurveyDataSource::errorLive)
     }
 
     private fun buildPagedListConfig(): PagedList.Config {
@@ -38,12 +45,11 @@ class MainViewModel @Inject constructor(val surveysRepository: SurveysRepository
             .build()
     }
 
-    private fun buildLivePagedList(config: PagedList.Config): LiveData<PagedList<Survey>> {
-        val dataSourceFactory = object : DataSource.Factory<Int, Survey>() {
-            override fun create(): DataSource<Int, Survey> {
-                return SurveyDataSource(surveysRepository)
-            }
-        }
-        return LivePagedListBuilder(dataSourceFactory, config).build()
+    fun refresh() {
+        dataSourceFactory.dataSourceLive.value?.invalidate()
+    }
+
+    fun retry() {
+
     }
 }
