@@ -18,12 +18,12 @@ import java.io.IOException
  *
  * @param service {@link Retrofit} interface that loads [Token] data from network.
  */
-class TokenSource(private val service: TokenService) {
+class TokenRepository(private val service: TokenService) {
 
     /**
      * Fetches [Token] from network.
      *
-     * @param <User>
+     * @param user
      * @return [Token]
      * @throws Throwable any error during the process
      */

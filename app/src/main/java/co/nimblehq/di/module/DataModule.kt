@@ -4,8 +4,8 @@ import co.nimblehq.BuildConfig
 import co.nimblehq.SurveysAccount
 import co.nimblehq.data.source.survey.SurveyRepository
 import co.nimblehq.data.source.survey.SurveyService
+import co.nimblehq.data.source.token.TokenRepository
 import co.nimblehq.data.source.token.TokenService
-import co.nimblehq.data.source.token.TokenSource
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -34,7 +34,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideSurveysService(interceptor: AuthorizationInterceptor) = buildRetrofit(
+    fun provideSurveysService(interceptor: AuthorizationInterceptor): SurveyService = buildRetrofit(
         createOkHttpClientBuilder()
             .addInterceptor(interceptor)
             .build()
@@ -42,21 +42,21 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideAuthorizationInterceptor(account: SurveysAccount, tokenSource: TokenSource) =
-        AuthorizationInterceptor(account, tokenSource)
+    fun provideAuthorizationInterceptor(account: SurveysAccount, tokenRepository: TokenRepository) =
+        AuthorizationInterceptor(account, tokenRepository)
 
     @Singleton
     @Provides
-    fun provideTokenRepository(service: TokenService) = TokenSource(service)
+    fun provideTokenRepository(service: TokenService) = TokenRepository(service)
 
     @Singleton
     @Provides
-    fun provideTokenService() = buildRetrofit(
+    fun provideTokenService(): TokenService = buildRetrofit(
         createOkHttpClientBuilder()
             .build()
     ).create(TokenService::class.java)
 
-    fun buildRetrofit(httpClient: OkHttpClient): Retrofit {
+    private fun buildRetrofit(httpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.ENDPOINT)
             .client(httpClient)
@@ -65,7 +65,7 @@ class DataModule {
             .build()
     }
 
-    fun createOkHttpClientBuilder() = OkHttpClient.Builder()
+    private fun createOkHttpClientBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()
         .readTimeout(30000, TimeUnit.MILLISECONDS)
         .connectTimeout(30000, TimeUnit.MILLISECONDS)
         .pingInterval(30, TimeUnit.SECONDS)
@@ -75,7 +75,7 @@ class DataModule {
 
 class AuthorizationInterceptor(
     private val account: SurveysAccount,
-    private val tokenSource: TokenSource
+    private val tokenRepository: TokenRepository
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -83,7 +83,7 @@ class AuthorizationInterceptor(
         var response = chain.proceed(request)
         if (response.code() == 401) { //if unauthorized
             runBlocking {
-                val token = tokenSource.refreshToken(account.provideUser())
+                val token = tokenRepository.refreshToken(account.provideUser())
                 account.refreshToken(token)
                 response = chain.proceed(setAuthorizationHeader(request))
             }
@@ -91,7 +91,7 @@ class AuthorizationInterceptor(
         return response
     }
 
-    fun setAuthorizationHeader(request: Request): Request {
+    private fun setAuthorizationHeader(request: Request): Request {
         return request.newBuilder()
             .header("Authorization", account.provideToken())
             .build()
