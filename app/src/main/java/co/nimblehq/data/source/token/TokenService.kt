@@ -11,8 +11,13 @@ import retrofit2.http.Query
  * Created by Viktor Artemiev on 2019-07-26.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
+
+/**
+ * Token API access points
+ */
 interface TokenService {
 
+    /** Provides a response of [Token] data object. */
     @POST("/oauth/token")
     fun refreshToken(
         @Query("grant_type") grantType: String = "password",

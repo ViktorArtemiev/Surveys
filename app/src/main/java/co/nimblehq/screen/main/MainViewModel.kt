@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import co.nimblehq.data.model.Survey
-import co.nimblehq.data.source.surveys.SurveyDataSource
-import co.nimblehq.data.source.surveys.SurveysDataSourceFactory
-import co.nimblehq.data.source.surveys.SurveysRepository
+import co.nimblehq.data.source.survey.SurveyDataSource
+import co.nimblehq.data.source.survey.SurveyDataSourceFactory
+import co.nimblehq.data.source.survey.SurveyRepository
 import javax.inject.Inject
 
 
@@ -16,13 +16,13 @@ import javax.inject.Inject
  * Created by Viktor Artemiev on 2019-07-26.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class MainViewModel @Inject constructor(surveysRepository: SurveysRepository) : ViewModel() {
+class MainViewModel @Inject constructor(surveyRepository: SurveyRepository) : ViewModel() {
 
     companion object {
         private const val PAGE_SIZE = 5
     }
 
-    private val dataSourceFactory = SurveysDataSourceFactory(surveysRepository)
+    private val dataSourceFactory = SurveyDataSourceFactory(surveyRepository)
 
     val surveysLive: LiveData<PagedList<Survey>>
     val itemCountLive: LiveData<Int>

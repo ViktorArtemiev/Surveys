@@ -2,8 +2,8 @@ package co.nimblehq.di.module
 
 import co.nimblehq.BuildConfig
 import co.nimblehq.SurveysAccount
-import co.nimblehq.data.source.surveys.SurveysRepository
-import co.nimblehq.data.source.surveys.SurveysService
+import co.nimblehq.data.source.survey.SurveyRepository
+import co.nimblehq.data.source.survey.SurveyService
 import co.nimblehq.data.source.token.TokenService
 import co.nimblehq.data.source.token.TokenSource
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -30,7 +30,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideSurveyRepository(service: SurveysService) = SurveysRepository(service)
+    fun provideSurveyRepository(service: SurveyService) = SurveyRepository(service)
 
     @Singleton
     @Provides
@@ -38,7 +38,7 @@ class DataModule {
         createOkHttpClientBuilder()
             .addInterceptor(interceptor)
             .build()
-    ).create(SurveysService::class.java)
+    ).create(SurveyService::class.java)
 
     @Singleton
     @Provides

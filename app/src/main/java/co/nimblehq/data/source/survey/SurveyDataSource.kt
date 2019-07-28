@@ -1,4 +1,4 @@
-package co.nimblehq.data.source.surveys
+package co.nimblehq.data.source.survey
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
@@ -11,7 +11,17 @@ import kotlinx.coroutines.launch
  * Created by Viktor Artemiev on 2019-07-27.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class SurveyDataSource(private val surveysRepository: SurveysRepository) : PageKeyedDataSource<Int, Survey>() {
+
+/**
+ * Data loader for page-keyed [Survey] content, where requests return keys for next/previous
+ * pages.
+ *
+ * [Int] Type of data used to query Value types out of the DataSource.
+ * [Survey] Type of items being loaded by the DataSource.
+ *
+ * @param surveyRepository Data Repository that loads [Survey] content from network
+ */
+class SurveyDataSource(private val surveyRepository: SurveyRepository) : PageKeyedDataSource<Int, Survey>() {
 
     var retry: (() -> Any)? = null
 
@@ -23,7 +33,7 @@ class SurveyDataSource(private val surveysRepository: SurveysRepository) : PageK
         GlobalScope.launch {
             try {
                 loadingLive.postValue(true)
-                val surveys = surveysRepository.getSurveys(page = 1, pageSize = params.requestedLoadSize)
+                val surveys = surveyRepository.getSurveys(page = 1, pageSize = params.requestedLoadSize)
                 loadingLive.postValue(false)
                 retry = null
                 callback.onResult(surveys, null, 2)
@@ -39,7 +49,7 @@ class SurveyDataSource(private val surveysRepository: SurveysRepository) : PageK
         GlobalScope.launch {
             try {
                 loadingLive.postValue(true)
-                val surveys = surveysRepository.getSurveys(page = params.key, pageSize = params.requestedLoadSize)
+                val surveys = surveyRepository.getSurveys(page = params.key, pageSize = params.requestedLoadSize)
                 loadingLive.postValue(false)
                 retry = null
                 callback.onResult(surveys, params.key + 1)

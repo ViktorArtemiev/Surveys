@@ -11,6 +11,10 @@ import dagger.android.AndroidInjection
  * Created by Viktor Artemiev on 2019-07-26.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
+
+/**
+ * Helper class to automatically inject activity if it implements [Injectable].
+ */
 object AppInjector {
     fun init(app: SurveysApp) {
         DaggerAppComponent.builder()
