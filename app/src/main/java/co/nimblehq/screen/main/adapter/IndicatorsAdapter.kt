@@ -19,6 +19,8 @@ class IndicatorsAdapter : RecyclerView.Adapter<PageIndicatorViewHolder>() {
 
     lateinit var recyclerView: RecyclerView
 
+    private var selectedPosition = 0
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         this.recyclerView = recyclerView
         this.recyclerView.layoutManager = object : LinearLayoutManager(recyclerView.context) {
@@ -46,24 +48,19 @@ class IndicatorsAdapter : RecyclerView.Adapter<PageIndicatorViewHolder>() {
     }
 
     fun selectItemByPosition(position: Int) {
-        if (position < 0 || position >= itemCount) return
+        if (canItemBeSelected(position)) {
+            indicators[selectedPosition].selected = false
+            notifyItemChanged(selectedPosition)
 
-        indicators[position].selected = true
-        notifyItemChanged(position)
-        recyclerView.scrollToPosition(position)
+            selectedPosition = position
 
-        val beforePosition = position - 1
-        if (beforePosition >= 0 && indicators[beforePosition].selected) {
-            indicators[beforePosition].selected = false
-            notifyItemChanged(beforePosition)
-        }
-
-        val afterPosition = position + 1
-        if (afterPosition < itemCount && indicators[afterPosition].selected) {
-            indicators[afterPosition].selected = false
-            notifyItemChanged(afterPosition)
+            indicators[selectedPosition].selected = true
+            notifyItemChanged(selectedPosition)
+            recyclerView.scrollToPosition(selectedPosition)
         }
     }
+
+    private fun canItemBeSelected(position: Int) = position in 0 until itemCount
 
     fun clear() {
         indicators.clear()

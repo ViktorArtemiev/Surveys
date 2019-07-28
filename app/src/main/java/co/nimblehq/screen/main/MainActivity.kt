@@ -14,6 +14,7 @@ import co.nimblehq.data.model.Survey
 import co.nimblehq.di.Injectable
 import co.nimblehq.screen.main.adapter.IndicatorsAdapter
 import co.nimblehq.screen.main.adapter.SurveysAdapter
+import co.nimblehq.screen.survey.SurveyActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,16 +30,12 @@ class MainActivity : AppCompatActivity(), Injectable {
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
-            survey = surveysAdapter.getItem(position)
-            button_survey.isVisible = survey != null
             indicatorsAdapter.selectItemByPosition(position)
         }
     }
 
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: MainViewModel
-
-    var survey: Survey? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +50,11 @@ class MainActivity : AppCompatActivity(), Injectable {
 
         recycler_view_indicator.adapter = indicatorsAdapter
 
+        button_survey.setOnClickListener { getSelectedSurvey()?.let { startSurveyActivity(it) } }
+
         viewModel = ViewModelProviders.of(this@MainActivity, viewModelFactory).get()
         viewModel.surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
-        viewModel.itemCountLive.observe(this@MainActivity, Observer { handleCount(it) })
+        viewModel.itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
         viewModel.loadingLive.observe(this@MainActivity, Observer { handleLoading(it) })
         viewModel.errorLive.observe(this@MainActivity, Observer { handleError(it) })
     }
@@ -67,20 +66,32 @@ class MainActivity : AppCompatActivity(), Injectable {
     fun refreshSurveys() {
         viewModel.refresh()
         indicatorsAdapter.clear()
+        button_survey.isVisible = false
+    }
+
+    fun getSelectedSurvey() = surveysAdapter.getItem(view_pager.currentItem)
+
+    fun startSurveyActivity(survey: Survey) {
+        val intent = SurveyActivity.startIntent(this@MainActivity, survey)
+        startActivity(intent)
     }
 
     fun handleSurveys(surveys: PagedList<Survey>) {
         surveysAdapter.submitList(surveys)
     }
 
-    fun handleCount(count: Int) {
+    fun handleItemCount(count: Int) {
         indicatorsAdapter.itemCount = count
+        indicatorsAdapter.selectItemByPosition(view_pager.currentItem)
     }
 
     fun handleLoading(isLoading: Boolean) {
-        button_survey.isVisible = !isLoading
-        if (isLoading) surveysAdapter.setState(SurveysAdapter.State.LOADING)
-        else surveysAdapter.setState(SurveysAdapter.State.DONE)
+        if (isLoading) {
+            surveysAdapter.setState(SurveysAdapter.State.LOADING)
+        } else {
+            surveysAdapter.setState(SurveysAdapter.State.DONE)
+            button_survey.isVisible = true
+        }
     }
 
     fun handleError(error: Throwable) {
