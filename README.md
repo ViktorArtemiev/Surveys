@@ -1,9 +1,9 @@
-# Development Environment
+## Development Environment
 
 The app is written entirely in Kotlin. 
 Used [Couroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) for asynchronous and non-blocking code.
 
-# Architecture
+## Architecture
 
 The architecture is built around
 [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/). 
@@ -16,14 +16,14 @@ Data is observed using
 and used [Kotlin View Binding Extension](https://kotlinlang.org/docs/tutorials/android-plugin.html)
 to bind UI components in layouts to the app's data sources.
 
-For loading and diaplaying small chunks of result data at a time used
+For loading and diaplaying small chunks of result data used
 [Paging](https://developer.android.com/topic/libraries/architecture/paging)
 
 Used [Dagger2](https://github.com/google/dagger) for dependency injection
 and heavily relied on [dagger-android](https://google.github.io/dagger/android.html) to abstract away
 boiler-plate code.
 
-# Third-party libraries
+## Third-party libraries
 
 [Retrofit](https://square.github.io/retrofit) for communication with server side.
 
