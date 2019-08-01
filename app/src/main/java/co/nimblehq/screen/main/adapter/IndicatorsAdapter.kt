@@ -63,6 +63,7 @@ class IndicatorsAdapter : RecyclerView.Adapter<PageIndicatorViewHolder>() {
     private fun canItemBeSelected(position: Int) = position in 0 until itemCount
 
     fun clear() {
+        selectedPosition = 0
         indicators.clear()
         notifyDataSetChanged()
     }
