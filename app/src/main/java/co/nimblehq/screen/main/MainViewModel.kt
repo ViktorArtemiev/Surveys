@@ -8,7 +8,6 @@ import androidx.paging.PagedList
 import co.nimblehq.data.model.Survey
 import co.nimblehq.data.source.survey.SurveyDataSource
 import co.nimblehq.data.source.survey.SurveyDataSourceFactory
-import co.nimblehq.data.source.survey.SurveyRepository
 import javax.inject.Inject
 
 
@@ -16,13 +15,11 @@ import javax.inject.Inject
  * Created by Viktor Artemiev on 2019-07-26.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class MainViewModel @Inject constructor(surveyRepository: SurveyRepository) : ViewModel() {
+class MainViewModel @Inject constructor(private val sourceFactory: SurveyDataSourceFactory) : ViewModel() {
 
     companion object {
         private const val PAGE_SIZE = 5
     }
-
-    private val dataSourceFactory = SurveyDataSourceFactory(surveyRepository)
 
     val surveysLive: LiveData<PagedList<Survey>>
     val itemCountLive: LiveData<Int>
@@ -31,13 +28,13 @@ class MainViewModel @Inject constructor(surveyRepository: SurveyRepository) : Vi
 
     init {
         val pagedListConfig = buildPagedListConfig()
-        surveysLive = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
+        surveysLive = LivePagedListBuilder(sourceFactory, pagedListConfig).build()
         itemCountLive = Transformations.switchMap<SurveyDataSource, Int>(
-            dataSourceFactory.dataSourceLive, SurveyDataSource::itemCountLive)
+            sourceFactory.dataSourceLive, SurveyDataSource::itemCountLive)
         loadingLive = Transformations.switchMap<SurveyDataSource, Boolean>(
-            dataSourceFactory.dataSourceLive, SurveyDataSource::loadingLive)
+            sourceFactory.dataSourceLive, SurveyDataSource::loadingLive)
         errorLive = Transformations.switchMap<SurveyDataSource, Throwable>(
-            dataSourceFactory.dataSourceLive, SurveyDataSource::errorLive)
+            sourceFactory.dataSourceLive, SurveyDataSource::errorLive)
     }
 
     private fun buildPagedListConfig(): PagedList.Config {
@@ -49,10 +46,10 @@ class MainViewModel @Inject constructor(surveyRepository: SurveyRepository) : Vi
     }
 
     fun refresh() {
-        dataSourceFactory.dataSourceLive.value?.invalidate()
+        sourceFactory.dataSourceLive.value?.invalidate()
     }
 
     fun retry() {
-        dataSourceFactory.dataSourceLive.value?.retry?.invoke()
+        sourceFactory.dataSourceLive.value?.retry?.invoke()
     }
 }
