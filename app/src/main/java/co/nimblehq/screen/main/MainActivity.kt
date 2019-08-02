@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity(), Injectable {
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
-            Timber.d(position.toString())
             indicatorsAdapter.selectItemByPosition(position)
         }
     }

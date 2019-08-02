@@ -31,6 +31,6 @@ class SurveyActivity : AppCompatActivity() {
         val survey = intent.getParcelableExtra<Survey>(EXTRA_SURVEY)
         toolbar.title = survey.title
         toolbar.setNavigationOnClickListener { onBackPressed() }
-        image_view.loadImage(survey.image)
+        image_view.loadImage(survey.getLargeImageUrl())
     }
 }

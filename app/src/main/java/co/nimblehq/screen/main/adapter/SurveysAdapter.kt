@@ -86,7 +86,7 @@ class SurveysAdapter(private val retryCallback: () -> Unit) :
 class SurveyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bindSurvey(survey: Survey) {
-        itemView.image_view.loadImage(survey.image)
+        itemView.image_view.loadImage(survey.getLargeImageUrl())
         itemView.text_view_title.text = survey.title
         itemView.text_view_description.text = survey.description
     }
