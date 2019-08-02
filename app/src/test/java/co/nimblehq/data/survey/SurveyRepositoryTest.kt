@@ -35,19 +35,19 @@ class SurveyRepositoryTest {
                 id = "1",
                 title = "Oishi Buffet",
                 description = "Customer Experience Survey",
-                image = "https://dhdbhh0jsld0o.cloudfront.net/m/1"
+                imageUrl = "https://dhdbhh0jsld0o.cloudfront.net/m/1"
             ),
             Survey(
                 id = "2",
                 title = "Segafredo",
                 description = "Customer Satisfaction Survey",
-                image = "https://dhdbhh0jsld0o.cloudfront.net/m/2"
+                imageUrl = "https://dhdbhh0jsld0o.cloudfront.net/m/2"
             ),
             Survey(
                 id = "3",
                 title = "Tops Super Store",
                 description = "Customer Survey",
-                image = "https://dhdbhh0jsld0o.cloudfront.net/m/3"
+                imageUrl = "https://dhdbhh0jsld0o.cloudfront.net/m/3"
             ))
     }
 
@@ -75,7 +75,7 @@ class SurveyRepositoryTest {
             assertEquals("1", surveys.first().id)
             assertEquals("Oishi Buffet", surveys.first().title)
             assertEquals("Customer Experience Survey", surveys.first().description)
-            assertEquals("https://dhdbhh0jsld0o.cloudfront.net/m/1", surveys.first().image)
+            assertEquals("https://dhdbhh0jsld0o.cloudfront.net/m/1", surveys.first().imageUrl)
         }
     }
 

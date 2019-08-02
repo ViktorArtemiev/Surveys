@@ -13,4 +13,7 @@ import kotlinx.android.parcel.Parcelize
 data class Survey(val id: String,
                   val title: String,
                   val description: String,
-                  @SerializedName("cover_image_url") val image: String) : Parcelable
+                  @SerializedName("cover_image_url") val imageUrl: String) : Parcelable {
+
+    fun getLargeImageUrl() = "${imageUrl}l"
+}

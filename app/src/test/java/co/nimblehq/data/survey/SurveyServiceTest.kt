@@ -50,7 +50,7 @@ class SurveyServiceTest : BaseServiceTest() {
             assertThat(survey.id, Is.`is`("df5c6cad88e3865aede0"))
             assertThat(survey.title, Is.`is`("Oishi Buffet"))
             assertThat(survey.description, Is.`is`("Customer Experience Survey"))
-            assertThat(survey.image, Is.`is`("https://dhdbhh0jsld0o.cloudfront.net/m/6b663dd6fb7a200ad4c7_"))
+            assertThat(survey.imageUrl, Is.`is`("https://dhdbhh0jsld0o.cloudfront.net/m/6b663dd6fb7a200ad4c7_"))
         }
     }
 

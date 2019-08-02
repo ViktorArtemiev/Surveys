@@ -13,13 +13,13 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 
 /**
- * Load image into this {@link android.widget.ImageView}
+ * Load imageUrl into this {@link android.widget.ImageView}
  *
  * @param url
  */
 fun ImageView.loadImage(url: String) {
     Glide.with(context)
-        .load(url + "l") // to get the high resolution image
+        .load(url)
         .transition(DrawableTransitionOptions.withCrossFade())
         .placeholder(R.color.blue_whale_alpha_50)
         .error(R.color.blue_whale_alpha_50)
