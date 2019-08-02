@@ -2,6 +2,7 @@ package co.nimblehq.di.module
 
 import co.nimblehq.BuildConfig
 import co.nimblehq.authenticator.TokenAuthenticator
+import co.nimblehq.data.source.survey.SurveyDataSourceFactory
 import co.nimblehq.data.source.survey.SurveyRepository
 import co.nimblehq.data.source.survey.SurveyService
 import co.nimblehq.data.source.token.TokenRepository
@@ -12,7 +13,6 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 
 /**
@@ -22,13 +22,14 @@ import javax.inject.Singleton
 @Module
 class DataModule {
 
-    @Singleton
+    @Provides
+    fun provideSurveyDataSourceFactory(repository: SurveyRepository) = SurveyDataSourceFactory(repository)
+
     @Provides
     fun provideSurveyRepository(service: SurveyService) = SurveyRepository(service)
 
-    @Singleton
     @Provides
-    fun provideSurveysService(httpClient: OkHttpClient, authenticator: TokenAuthenticator): SurveyService {
+    fun provideSurveyService(httpClient: OkHttpClient, authenticator: TokenAuthenticator): SurveyService {
         return buildRetrofit(
             httpClient
                 .newBuilder()
@@ -37,11 +38,9 @@ class DataModule {
         ).create(SurveyService::class.java)
     }
 
-    @Singleton
     @Provides
     fun provideTokenRepository(service: TokenService) = TokenRepository(service)
 
-    @Singleton
     @Provides
     fun provideTokenService(httpClient: OkHttpClient): TokenService {
         return buildRetrofit(httpClient)
