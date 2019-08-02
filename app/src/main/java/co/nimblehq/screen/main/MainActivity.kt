@@ -52,12 +52,16 @@ class MainActivity : AppCompatActivity(), Injectable {
 
         button_survey.setOnClickListener { getSelectedSurvey()?.let { startSurveyActivity(it) } }
 
-        viewModel = ViewModelProviders.of(this@MainActivity, viewModelFactory).get()
-        viewModel.surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
-        viewModel.itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
-        viewModel.loadingLive.observe(this@MainActivity, Observer { handleLoading(it) })
-        viewModel.errorLive.observe(this@MainActivity, Observer { handleError(it) })
+        viewModel = provideViewModel()
     }
+
+    fun provideViewModel() = ViewModelProviders.of(this@MainActivity, viewModelFactory)
+        .get<MainViewModel>().apply {
+            surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
+            itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
+            loadingLive.observe(this@MainActivity, Observer { handleLoading(it) })
+            errorLive.observe(this@MainActivity, Observer { handleError(it) })
+        }
 
     fun retrySurveys() {
         viewModel.retry()
