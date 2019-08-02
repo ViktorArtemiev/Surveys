@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), Injectable {
 
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
+            Timber.d(position.toString())
             indicatorsAdapter.selectItemByPosition(position)
         }
     }
@@ -55,14 +56,6 @@ class MainActivity : AppCompatActivity(), Injectable {
         viewModel = provideViewModel()
     }
 
-    fun provideViewModel() = ViewModelProviders.of(this@MainActivity, viewModelFactory)
-        .get<MainViewModel>().apply {
-            surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
-            itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
-            loadingLive.observe(this@MainActivity, Observer { handleLoading(it) })
-            errorLive.observe(this@MainActivity, Observer { handleError(it) })
-        }
-
     fun retrySurveys() {
         viewModel.retry()
     }
@@ -70,7 +63,6 @@ class MainActivity : AppCompatActivity(), Injectable {
     fun refreshSurveys() {
         viewModel.refresh()
         indicatorsAdapter.clear()
-        button_survey.isVisible = false
     }
 
     fun getSelectedSurvey() = surveysAdapter.getItem(view_pager.currentItem)
@@ -79,6 +71,15 @@ class MainActivity : AppCompatActivity(), Injectable {
         val intent = SurveyActivity.startIntent(this@MainActivity, survey)
         startActivity(intent)
     }
+
+    fun provideViewModel() = ViewModelProviders.of(this@MainActivity, viewModelFactory)
+        .get<MainViewModel>().apply {
+            surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
+            itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
+            initialLoadingLive.observe(this@MainActivity, Observer { handleInitialLoading(it) })
+            afterLoadingLive.observe(this@MainActivity, Observer { handleAfterLoading(it) })
+            errorLive.observe(this@MainActivity, Observer { handleError(it) })
+        }
 
     fun handleSurveys(surveys: PagedList<Survey>) {
         surveysAdapter.submitList(surveys)
@@ -89,13 +90,13 @@ class MainActivity : AppCompatActivity(), Injectable {
         indicatorsAdapter.selectItemByPosition(view_pager.currentItem)
     }
 
-    fun handleLoading(isLoading: Boolean) {
-        if (isLoading) {
-            surveysAdapter.setState(SurveysAdapter.State.LOADING)
-        } else {
-            surveysAdapter.setState(SurveysAdapter.State.DONE)
-            button_survey.isVisible = true
-        }
+    fun handleInitialLoading(isLoading: Boolean) {
+        button_survey.isVisible = !isLoading
+        handleAfterLoading(isLoading)
+    }
+
+    fun handleAfterLoading(isLoading: Boolean) {
+        surveysAdapter.setState(if (isLoading) SurveysAdapter.State.LOADING else SurveysAdapter.State.DONE)
     }
 
     fun handleError(error: Throwable) {
