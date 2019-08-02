@@ -1,6 +1,6 @@
 package co.nimblehq.di.module
 
-import co.nimblehq.SurveysAccount
+import co.nimblehq.account.Account
 import co.nimblehq.authenticator.TokenAuthenticator
 import co.nimblehq.data.source.token.TokenRepository
 import dagger.Module
@@ -30,6 +30,6 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideTokenAuthenticator(account: SurveysAccount, tokenRepository: TokenRepository) =
+    fun provideTokenAuthenticator(account: Account, tokenRepository: TokenRepository) =
         TokenAuthenticator(account, tokenRepository)
 }
