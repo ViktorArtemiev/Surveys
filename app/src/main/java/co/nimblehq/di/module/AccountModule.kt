@@ -1,7 +1,8 @@
 package co.nimblehq.di.module
 
-import co.nimblehq.SurveysAccount
 import co.nimblehq.SurveysApp
+import co.nimblehq.account.Account
+import co.nimblehq.account.AccountImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -12,11 +13,11 @@ import javax.inject.Singleton
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
 @Module
-class AppModule {
+class AccountModule {
 
     @Provides
     @Singleton
-    fun provideAccount(app: SurveysApp): SurveysAccount {
-        return SurveysAccount(app)
+    fun provideAccount(app: SurveysApp): Account {
+        return AccountImpl(app)
     }
 }

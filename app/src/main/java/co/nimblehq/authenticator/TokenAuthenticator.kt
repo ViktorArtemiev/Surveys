@@ -1,6 +1,6 @@
 package co.nimblehq.authenticator
 
-import co.nimblehq.SurveysAccount
+import co.nimblehq.account.Account
 import co.nimblehq.data.source.token.TokenRepository
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
@@ -14,7 +14,7 @@ import okhttp3.Route
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
 class TokenAuthenticator(
-    private val account: SurveysAccount,
+    private val account: Account,
     private val tokenRepository: TokenRepository
 ) : Authenticator {
 
