@@ -1,7 +1,6 @@
 package co.nimblehq.screen.main
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,10 +10,10 @@ import androidx.paging.PagedList
 import androidx.viewpager2.widget.ViewPager2
 import co.nimblehq.R
 import co.nimblehq.data.model.Survey
-import co.nimblehq.di.Injectable
 import co.nimblehq.screen.main.adapter.IndicatorsAdapter
 import co.nimblehq.screen.main.adapter.SurveysAdapter
 import co.nimblehq.screen.survey.SurveyActivity
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -23,7 +22,7 @@ import javax.inject.Inject
  * Created by Viktor Artemiev on 2019-07-25.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class MainActivity : AppCompatActivity(), Injectable {
+class MainActivity : DaggerAppCompatActivity() {
 
     private val surveysAdapter = SurveysAdapter { retrySurveys() }
     private val indicatorsAdapter = IndicatorsAdapter()
