@@ -11,10 +11,7 @@
 
     <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/blue_whale"
-            android:elevation="4dp"
+            style="@style/Widget.Surveys.Toolbar"
             app:navigationIcon="@drawable/ic_refresh_white_24dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
