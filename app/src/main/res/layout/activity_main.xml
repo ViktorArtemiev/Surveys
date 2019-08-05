@@ -34,13 +34,10 @@
 
     <com.google.android.material.button.MaterialButton
             android:id="@+id/button_survey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Widget.Surveys.Button"
             android:layout_marginBottom="32dp"
-            android:textAllCaps="false"
             android:text="@string/activity_main_btn_survey"
             android:visibility="gone"
-            app:cornerRadius="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
