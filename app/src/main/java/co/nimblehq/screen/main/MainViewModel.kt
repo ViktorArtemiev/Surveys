@@ -3,11 +3,13 @@ package co.nimblehq.screen.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.paging.LivePagedListBuilder
+import androidx.paging.Config
 import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import co.nimblehq.data.model.Survey
 import co.nimblehq.data.source.survey.SurveyDataSource
 import co.nimblehq.data.source.survey.SurveyDataSourceFactory
+import java.util.concurrent.Executor
 import javax.inject.Inject
 
 
@@ -18,34 +20,37 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val sourceFactory: SurveyDataSourceFactory) : ViewModel() {
 
     companion object {
-        private const val PAGE_SIZE = 5
+        const val PAGE_SIZE = 5
     }
 
     val surveysLive: LiveData<PagedList<Survey>>
     val itemCountLive: LiveData<Int>
-    val initialLoadingLive: LiveData<Boolean>
-    val afterLoadingLive: LiveData<Boolean>
+    val initialLoadLive: LiveData<Boolean>
+    val afterLoadLive: LiveData<Boolean>
     val errorLive: LiveData<Throwable>
 
     init {
-        val pagedListConfig = buildPagedListConfig()
-        surveysLive = LivePagedListBuilder(sourceFactory, pagedListConfig).build()
-        itemCountLive = Transformations.switchMap<SurveyDataSource, Int>(
-            sourceFactory.dataSourceLive, SurveyDataSource::itemCountLive)
-        initialLoadingLive = Transformations.switchMap<SurveyDataSource, Boolean>(
-            sourceFactory.dataSourceLive, SurveyDataSource::initialLoadingLive)
-        afterLoadingLive = Transformations.switchMap<SurveyDataSource, Boolean>(
-            sourceFactory.dataSourceLive, SurveyDataSource::afterLoadingLive)
-        errorLive = Transformations.switchMap<SurveyDataSource, Throwable>(
-            sourceFactory.dataSourceLive, SurveyDataSource::errorLive)
-    }
+        surveysLive = sourceFactory.toLiveData(
+            config = Config(
+                pageSize = PAGE_SIZE,
+                enablePlaceholders = false,
+                initialLoadSizeHint = PAGE_SIZE * 2
+            ),
+            fetchExecutor = Executor { command -> command.run() }
 
-    private fun buildPagedListConfig(): PagedList.Config {
-        return PagedList.Config.Builder()
-            .setPageSize(PAGE_SIZE)
-            .setInitialLoadSizeHint(PAGE_SIZE * 2)
-            .setEnablePlaceholders(false)
-            .build()
+        )
+        itemCountLive = Transformations.switchMap<SurveyDataSource, Int>(
+            sourceFactory.dataSourceLive, SurveyDataSource::itemCountLive
+        )
+        initialLoadLive = Transformations.switchMap<SurveyDataSource, Boolean>(
+            sourceFactory.dataSourceLive, SurveyDataSource::initialLoadingLive
+        )
+        afterLoadLive = Transformations.switchMap<SurveyDataSource, Boolean>(
+            sourceFactory.dataSourceLive, SurveyDataSource::afterLoadingLive
+        )
+        errorLive = Transformations.switchMap<SurveyDataSource, Throwable>(
+            sourceFactory.dataSourceLive, SurveyDataSource::errorLive
+        )
     }
 
     fun refresh() {

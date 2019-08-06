@@ -12,7 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 import retrofit2.Response
 import java.io.IOException
 
@@ -29,7 +29,7 @@ class SurveyRepositoryTest {
 
     @Before
     fun setup() {
-        service = Mockito.mock(SurveyService::class.java)
+        service = mock(SurveyService::class.java)
         surveys = mutableListOf(
             Survey(
                 id = "1",
@@ -54,18 +54,18 @@ class SurveyRepositoryTest {
     @Test
     fun `when get surveys - calls the correct API method`() {
         val repository = SurveyRepository(service)
-        Mockito.`when`(service.getSurveys(page = 1, perPage = 3))
+        `when`(service.getSurveys(page = 1, perPage = 3))
             .thenReturn(CompletableDeferred(Response.success(surveys)))
         runBlocking {
             repository.getSurveys(page = 1, pageSize = 3)
-            Mockito.verify(service).getSurveys(page = 1, perPage = 3)
+            verify(service).getSurveys(page = 1, perPage = 3)
         }
     }
 
     @Test
     fun `get surveys and succeed`() {
         val repository = SurveyRepository(service)
-        Mockito.`when`(service.getSurveys(page = 1, perPage = 3))
+        `when`(service.getSurveys(page = 1, perPage = 3))
             .thenReturn(CompletableDeferred(Response.success(surveys)))
         runBlocking {
             val surveys = repository.getSurveys(page = 1, pageSize = 3)
@@ -80,9 +80,9 @@ class SurveyRepositoryTest {
     }
 
     @Test(expected = IOException::class)
-    fun `refresh token and fail`() {
+    fun `get surveys and fail`() {
         val repository = SurveyRepository(service)
-        Mockito.`when`(service.getSurveys(page = 1, perPage = 3))
+        `when`(service.getSurveys(page = 1, perPage = 3))
             .thenReturn(
                 CompletableDeferred(
                     Response.error(401, ResponseBody.create(

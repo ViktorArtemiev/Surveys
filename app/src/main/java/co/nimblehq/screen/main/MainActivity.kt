@@ -74,8 +74,8 @@ class MainActivity : DaggerAppCompatActivity() {
         .get<MainViewModel>().apply {
             surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
             itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
-            initialLoadingLive.observe(this@MainActivity, Observer { handleInitialLoading(it) })
-            afterLoadingLive.observe(this@MainActivity, Observer { handleAfterLoading(it) })
+            initialLoadLive.observe(this@MainActivity, Observer { handleInitialLoading(it) })
+            afterLoadLive.observe(this@MainActivity, Observer { handleAfterLoading(it) })
             errorLive.observe(this@MainActivity, Observer { handleError(it) })
         }
 
