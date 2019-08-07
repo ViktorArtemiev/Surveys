@@ -17,17 +17,31 @@ import javax.inject.Inject
  * Created by Viktor Artemiev on 2019-07-26.
  * Copyright (c) 2019, Nimble. All rights reserved.
  */
-class MainViewModel @Inject constructor(private val sourceFactory: SurveyDataSourceFactory) : ViewModel() {
+abstract class MainViewModel : ViewModel() {
+
+    abstract val surveysLive: LiveData<PagedList<Survey>>
+    abstract val itemCountLive: LiveData<Int>
+    abstract val initialLoadLive: LiveData<Boolean>
+    abstract val afterLoadLive: LiveData<Boolean>
+    abstract val errorLive: LiveData<Throwable>
+
+    abstract fun reload()
+
+    abstract fun retry()
+
+}
+
+class MainViewModelImpl @Inject constructor(private val sourceFactory: SurveyDataSourceFactory) : MainViewModel() {
 
     companion object {
         const val PAGE_SIZE = 5
     }
 
-    val surveysLive: LiveData<PagedList<Survey>>
-    val itemCountLive: LiveData<Int>
-    val initialLoadLive: LiveData<Boolean>
-    val afterLoadLive: LiveData<Boolean>
-    val errorLive: LiveData<Throwable>
+    override val surveysLive: LiveData<PagedList<Survey>>
+    override val itemCountLive: LiveData<Int>
+    override val initialLoadLive: LiveData<Boolean>
+    override val afterLoadLive: LiveData<Boolean>
+    override val errorLive: LiveData<Throwable>
 
     init {
         surveysLive = sourceFactory.toLiveData(
@@ -37,7 +51,6 @@ class MainViewModel @Inject constructor(private val sourceFactory: SurveyDataSou
                 initialLoadSizeHint = PAGE_SIZE * 2
             ),
             fetchExecutor = Executor { command -> command.run() }
-
         )
         itemCountLive = Transformations.switchMap<SurveyDataSource, Int>(
             sourceFactory.dataSourceLive, SurveyDataSource::itemCountLive
@@ -53,11 +66,11 @@ class MainViewModel @Inject constructor(private val sourceFactory: SurveyDataSou
         )
     }
 
-    fun refresh() {
+    override fun reload() {
         sourceFactory.dataSourceLive.value?.invalidate()
     }
 
-    fun retry() {
+    override fun retry() {
         sourceFactory.dataSourceLive.value?.retry?.invoke()
     }
 }

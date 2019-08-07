@@ -38,7 +38,7 @@ class MainViewModelTest {
     val executorRule = InstantTaskExecutorRule()
 
     lateinit var service: SurveyService
-    lateinit var viewModel: MainViewModel
+    lateinit var viewModel: MainViewModelImpl
 
     @Before
     @ExperimentalCoroutinesApi
@@ -46,7 +46,7 @@ class MainViewModelTest {
         service = mock(SurveyService::class.java)
         val repository = SurveyRepository(service)
         val sourceFactory = SurveyDataSourceFactory(repository, Dispatchers.Unconfined)
-        viewModel = MainViewModel(sourceFactory)
+        viewModel = MainViewModelImpl(sourceFactory)
     }
 
     @Test
@@ -58,7 +58,7 @@ class MainViewModelTest {
         viewModel.initialLoadLive.observeForever(initialLoadObserver)
 
         val surveys = (1..10).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(1, 2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1, 2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(surveys)))
         val pagedList = getPagedList(viewModel.surveysLive)
         pagedList.loadAllData()
@@ -83,7 +83,7 @@ class MainViewModelTest {
         val errorObserver = mock(Observer::class.java) as Observer<Throwable>
         viewModel.errorLive.observeForever(errorObserver)
 
-        `when`(service.getSurveys(1, 2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1, 2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(
                 Response.error(401, ResponseBody.create(
                     MediaType.parse("application/json"), byteArrayOf()))))
@@ -111,7 +111,7 @@ class MainViewModelTest {
         val errorObserver = mock(Observer::class.java) as Observer<Throwable>
         viewModel.errorLive.observeForever(errorObserver)
 
-        `when`(service.getSurveys(1, 2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1, 2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(
                 Response.error(401, ResponseBody.create(
                     MediaType.parse("application/json"), byteArrayOf()))))
@@ -125,7 +125,7 @@ class MainViewModelTest {
         verify(errorObserver).onChanged(any(IOException::class.java))
 
         val surveys = (1..10).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(1, 2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1, 2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(surveys)))
         viewModel.retry()
         pagedList.loadAllData()
@@ -148,14 +148,14 @@ class MainViewModelTest {
         viewModel.initialLoadLive.observeForever(initialLoadObserver)
 
         val surveys = (1..10).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(1, 2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1, 2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(surveys)))
 
         val pagedList = getPagedList(viewModel.surveysLive)
         pagedList.loadAllData()
         assertThat(pagedList, `is`(surveys))
 
-        viewModel.refresh()
+        viewModel.reload()
         pagedList.loadAllData()
         assertThat(pagedList, `is`(surveys))
 
@@ -179,11 +179,11 @@ class MainViewModelTest {
         viewModel.errorLive.observeForever(errorObserver)
 
         val initialSurveys = (1..10).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(1, 2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1, 2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(initialSurveys)))
 
         val afterSurveys = (10..15).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(2, MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(2, MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(afterSurveys)))
 
         val totalSurveys = mutableListOf<Survey>().apply {
@@ -214,10 +214,10 @@ class MainViewModelTest {
         viewModel.errorLive.observeForever(errorObserver)
 
         val initialSurveys = (1..10).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(1,2 * MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(1,2 * MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(initialSurveys)))
 
-        `when`(service.getSurveys(2, MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(2, MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(
                 Response.error(401, ResponseBody.create(
                     MediaType.parse("application/json"), byteArrayOf()))))
@@ -233,7 +233,7 @@ class MainViewModelTest {
         inInitialOrder.verifyNoMoreInteractions()
 
         val afterSurveys = (10..14).map { mockSurvey(it.toString()) }
-        `when`(service.getSurveys(2, MainViewModel.PAGE_SIZE))
+        `when`(service.getSurveys(2, MainViewModelImpl.PAGE_SIZE))
             .thenReturn(CompletableDeferred(Response.success(afterSurveys)))
         viewModel.retry()
         pagedList.loadAllData()

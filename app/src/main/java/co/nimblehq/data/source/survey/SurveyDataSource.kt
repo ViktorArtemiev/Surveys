@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import co.nimblehq.data.model.Survey
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
  * [Survey] Type of items being loaded by the DataSource.
  *
  * @param surveyRepository Data Repository that loads [Survey] content from network
+ * @param dispatcher A coroutine dispatcher that is confined to the thread operating [CoroutineScope.launch]
  */
 class SurveyDataSource(private val surveyRepository: SurveyRepository,
                        private val dispatcher: CoroutineDispatcher) : PageKeyedDataSource<Int, Survey>() {
