@@ -36,3 +36,5 @@ boiler-plate code.
 [Timber](https://github.com/JakeWharton/timber) for logging.
 
 [Mockito](https://github.com/mockito/mockito) for unit testing.
+
+[Espresso](https://developer.android.com/training/testing/espresso) for instrumented unit testsing.
