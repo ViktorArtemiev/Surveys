@@ -13,12 +13,14 @@
             android:id="@+id/toolbar"
             style="@style/Widget.Surveys.Toolbar"
             app:navigationIcon="@drawable/ic_refresh_white_24dp"
+            app:navigationContentDescription="@string/activity_main_nav_btn_description"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
                 style="@style/TextAppearance.Surveys.Toolbar.Title"
+                android:id="@+id/text_view_toolbar_title"
                 android:text="@string/activity_main_title"/>
 
     </androidx.appcompat.widget.Toolbar>

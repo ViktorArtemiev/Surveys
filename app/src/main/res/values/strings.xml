@@ -3,6 +3,7 @@
 
     <!--activity main start-->
     <string name="activity_main_title">SURVEYS</string>
+    <string name="activity_main_nav_btn_description">Reload</string>
     <string name="activity_main_btn_survey">Take the survey</string>
     <!--activity main end-->
 

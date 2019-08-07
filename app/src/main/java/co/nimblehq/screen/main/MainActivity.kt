@@ -41,7 +41,7 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setNavigationOnClickListener { refreshSurveys() }
+        toolbar.setNavigationOnClickListener { reloadSurveys() }
 
         view_pager.orientation = ViewPager2.ORIENTATION_VERTICAL
         view_pager.adapter = surveysAdapter
@@ -58,8 +58,8 @@ class MainActivity : DaggerAppCompatActivity() {
         viewModel.retry()
     }
 
-    fun refreshSurveys() {
-        viewModel.refresh()
+    fun reloadSurveys() {
+        viewModel.reload()
         indicatorsAdapter.clear()
     }
 
@@ -74,8 +74,8 @@ class MainActivity : DaggerAppCompatActivity() {
         .get<MainViewModel>().apply {
             surveysLive.observe(this@MainActivity, Observer { handleSurveys(it) })
             itemCountLive.observe(this@MainActivity, Observer { handleItemCount(it) })
-            initialLoadingLive.observe(this@MainActivity, Observer { handleInitialLoading(it) })
-            afterLoadingLive.observe(this@MainActivity, Observer { handleAfterLoading(it) })
+            initialLoadLive.observe(this@MainActivity, Observer { handleInitialLoading(it) })
+            afterLoadLive.observe(this@MainActivity, Observer { handleAfterLoading(it) })
             errorLive.observe(this@MainActivity, Observer { handleError(it) })
         }
 

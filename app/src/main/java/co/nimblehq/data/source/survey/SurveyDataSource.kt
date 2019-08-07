@@ -3,6 +3,8 @@ package co.nimblehq.data.source.survey
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import co.nimblehq.data.model.Survey
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -20,8 +22,10 @@ import kotlinx.coroutines.launch
  * [Survey] Type of items being loaded by the DataSource.
  *
  * @param surveyRepository Data Repository that loads [Survey] content from network
+ * @param dispatcher A coroutine dispatcher that is confined to the thread operating [CoroutineScope.launch]
  */
-class SurveyDataSource(private val surveyRepository: SurveyRepository) : PageKeyedDataSource<Int, Survey>() {
+class SurveyDataSource(private val surveyRepository: SurveyRepository,
+                       private val dispatcher: CoroutineDispatcher) : PageKeyedDataSource<Int, Survey>() {
 
     var retry: (() -> Any)? = null
 
@@ -31,7 +35,7 @@ class SurveyDataSource(private val surveyRepository: SurveyRepository) : PageKey
     val errorLive = MutableLiveData<Throwable>()
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Survey>) {
-        GlobalScope.launch {
+        GlobalScope.launch(dispatcher) {
             try {
                 initialLoadingLive.postValue(true)
                 val surveys = surveyRepository.getSurveys(page = 1, pageSize = params.requestedLoadSize)
@@ -47,7 +51,7 @@ class SurveyDataSource(private val surveyRepository: SurveyRepository) : PageKey
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Survey>) {
-        GlobalScope.launch {
+        GlobalScope.launch(dispatcher) {
             try {
                 afterLoadingLive.postValue(true)
                 val surveys = surveyRepository.getSurveys(page = params.key, pageSize = params.requestedLoadSize)

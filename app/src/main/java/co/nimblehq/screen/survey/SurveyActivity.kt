@@ -18,7 +18,7 @@ class SurveyActivity : AppCompatActivity() {
 
     companion object {
 
-        private const val EXTRA_SURVEY = "EXTRA_SURVEY"
+        const val EXTRA_SURVEY = "EXTRA_SURVEY"
 
         fun startIntent(context: Context, survey: Survey) =
             Intent(context, SurveyActivity::class.java)

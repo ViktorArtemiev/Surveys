@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import co.nimblehq.screen.ViewModelFactory
 import co.nimblehq.screen.main.MainViewModel
+import co.nimblehq.screen.main.MainViewModelImpl
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module
@@ -24,7 +25,7 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(MainViewModel::class)
-    abstract fun bindSplashViewModel(viewModel: MainViewModel): ViewModel
+    abstract fun bindSplashViewModel(viewModel: MainViewModelImpl): ViewModel
 
 }
 
