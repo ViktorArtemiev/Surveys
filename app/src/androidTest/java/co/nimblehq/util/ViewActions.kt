@@ -13,15 +13,15 @@ import org.hamcrest.Matcher
  */
 
 fun waitFor(delay: Long) = object : ViewAction {
-        override fun getConstraints(): Matcher<View> {
-            return ViewMatchers.isRoot()
-        }
-
-        override fun getDescription(): String {
-            return "wait for " + delay + "milliseconds"
-        }
-
-        override fun perform(uiController: UiController, view: View) {
-            uiController.loopMainThreadForAtLeast(delay)
-        }
+    override fun getConstraints(): Matcher<View> {
+        return ViewMatchers.isRoot()
     }
+
+    override fun getDescription(): String {
+        return "wait for " + delay + "milliseconds"
+    }
+
+    override fun perform(uiController: UiController, view: View) {
+        uiController.loopMainThreadForAtLeast(delay)
+    }
+}
